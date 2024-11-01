@@ -15,6 +15,10 @@ gerenciar estoque e acompanhar vendas, com o objetivo de melhorar a organizaçã
 os processos de gestão da Farmacia.
 
 Contato
-Desenvolvido por Kauany Paterno.
+Desenvolvido por Kauany Paterno, Pedro Henrique Bartsch da Silva e Luiz Guilherme Garcia.
 Email: kauany_paterno@estudante.sesisenai.org.br
+pedro_bartsch-silva@estudante.sesisenai.org.br
+luiz_g_garcia@estudante.sesisenai.org.br
+
 LinkedIn: Kauany Paterno
+
