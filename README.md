@@ -9,6 +9,7 @@ Modelagem do Sistema e Banco de Dados
 Contribuição
 Licença
 
+Descrição do projeto
 Este é um sistema de gerenciamento de Farmacia, onde usuários podem cadastrar produtos,
 gerenciar estoque e acompanhar vendas, com o objetivo de melhorar a organização e otimizar
 os processos de gestão da Farmacia.
