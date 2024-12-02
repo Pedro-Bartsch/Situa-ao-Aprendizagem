@@ -117,6 +117,7 @@ class FarmaciaApp:
             messagebox.showerror("Erro", "Nome de usuário ou email já cadastrado.")
 
     def cadastrar_produto(self):
+       
         """Tela para cadastrar um novo produto"""
         self.cadastro_produto_janela = tk.Toplevel(self.root)
         self.cadastro_produto_janela.title("Cadastro de Produto")
@@ -144,41 +145,41 @@ class FarmaciaApp:
         self.entry_quantidade_produto = tk.Entry(self.cadastro_produto_janela)
         self.entry_quantidade_produto.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
 
-        # Botão Cadastrar Produto
+            # Botão Cadastrar Produto
         self.botao_cadastrar_produto = tk.Button(self.cadastro_produto_janela, text="Cadastrar Produto", width=20, height=2, command=self.finalizar_cadastro_produto)
         self.botao_cadastrar_produto.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
 
-def finalizar_cadastro_produto(self):
-    """Função para finalizar o cadastro do produto"""
-    nome_produto = self.entry_nome_produto.get()
-    preco_produto = self.entry_preco_produto.get()
-    quantidade_produto = self.entry_quantidade_produto.get()
+    def finalizar_cadastro_produto(self):
+        """Função para finalizar o cadastro do produto"""
+        nome_produto = self.entry_nome_produto.get()
+        preco_produto = self.entry_preco_produto.get()
+        quantidade_produto = self.entry_quantidade_produto.get()
 
-    # Validação se os campos foram preenchidos
-    if not nome_produto or not preco_produto or not quantidade_produto:
-        messagebox.showerror("Erro", "Todos os campos são obrigatórios!")
-        return
-
-    try:
-        preco_produto = float(preco_produto)
-        quantidade_produto = int(quantidade_produto)
-
-        # Verifica se os valores são válidos
-        if preco_produto <= 0 or quantidade_produto <= 0:
-            messagebox.showerror("Erro", "Preço e quantidade devem ser maiores que zero!")
+        # Validação se os campos foram preenchidos
+        if not nome_produto or not preco_produto or not quantidade_produto:
+            messagebox.showerror("Erro", "Todos os campos são obrigatórios!")
             return
 
-        # Gerando o código do produto
-        codigo_produto = nome_produto[:3].upper() + str(int(preco_produto * 100))
-        produto = Produto(nome_produto, codigo_produto, preco_produto, quantidade_produto)
-        estoque[produto.codigo] = produto  # Salva no estoque
-        messagebox.showinfo("Concluído", "Produto cadastrado com sucesso!")
-        
-        # Fechar a janela após cadastro
-        self.cadastro_produto_janela.destroy()
+        try:
+            preco_produto = float(preco_produto)
+            quantidade_produto = int(quantidade_produto)
 
-    except ValueError:
-        messagebox.showerror("Erro", "Por favor, insira valores válidos para preço e quantidade.")
+            # Verifica se os valores são válidos
+            if preco_produto <= 0 or quantidade_produto <= 0:
+                messagebox.showerror("Erro", "Preço e quantidade devem ser maiores que zero!")
+                return
+
+            # Gerando o código do produto
+            codigo_produto = nome_produto[:3].upper() + str(int(preco_produto * 100))
+            produto = Produto(nome_produto, codigo_produto, preco_produto, quantidade_produto)
+            estoque[produto.codigo] = produto  # Salva no estoque
+            messagebox.showinfo("Concluído", "Produto cadastrado com sucesso!")
+        
+            # Fechar a janela após cadastro
+            self.cadastro_produto_janela.destroy()
+
+        except ValueError:
+            messagebox.showerror("Erro", "Por favor, insira valores válidos para preço e quantidade.")
 
     def remover_produto(self):
         codigo = self.ask_input("Código do medicamento para remover: ")
