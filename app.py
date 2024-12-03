@@ -216,7 +216,7 @@ class FarmaciaApp:
         self.codigo_label = tk.Label(self.remover_window, text="Código do medicamento:", bg="#4CAF50", fg="white", font=("Helvetica", 12, "bold"))
         self.codigo_label.pack(pady=10)
 
-        self.codigo_entry = tk.Entry(self.remover_window)
+        self.codigo_entry = tk.Entry(self.remover_window,font=("Helvética", 12))
         self.codigo_entry.pack(pady=5)
 
             # Função para remover produto
@@ -249,7 +249,7 @@ class FarmaciaApp:
         self.codigo_label = tk.Label(self.atualizar_window, text="Código do medicamento:",bg="#4CAF50", fg="white", font=("Helvetica", 12, "bold"))
         self.codigo_label.pack(pady=10)
 
-        self.codigo_entry = tk.Entry(self.atualizar_window)
+        self.codigo_entry = tk.Entry(self.atualizar_window,font=("Helvética", 12))
         self.codigo_entry.pack(pady=5)
 
         # Função para atualizar produto
@@ -367,4 +367,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
