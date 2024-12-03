@@ -19,8 +19,10 @@ Requisitos funcionais  :
 Colocar retirar e alterar os medicamentos do estoque
 Atualizar o estoque
 Colocar e alterar preços dos produtos
+Informar qual o tipo do medicamento (Analgésico, Anti-Inflamatório, Antibiótico ou Vitaminas)
 Poder pesquisar os produtos com ajuda de um menu
 Ele deve ser integrado com um banco de dados
+Deve listas os produtos cadastrados
 
 
 Requisitos não funcionais :
