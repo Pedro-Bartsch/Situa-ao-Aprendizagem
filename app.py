@@ -1,77 +1,69 @@
 import tkinter as tk
-from tkinter import messagebox
-from tkinter import simpledialog
+from tkinter import messagebox, simpledialog
 from modelos import Produto
 
 # Armazenar produtos e usuários em memória
 estoque = {}
-usuarios = {}
+usuarios = {}  # Dicionário para armazenar dados dos usuários
 
 class FarmaciaApp:
     
     def __init__(self, root):
         self.root = root
         self.root.title("Farmácia App")
-        self.root.geometry("800x400")
+        self.root.geometry("800x600")  # Tamanho maior para acomodar os botões
 
-        # Menu
-        self.menu = tk.Menu(root)
-        root.config(menu=self.menu)
-
-        # Criar os itens do menu 
-        self.menu_produtos = tk.Menu(self.menu, tearoff=0)
-        self.menu.add_cascade(label="Produto", menu=self.menu_produtos)
-        self.menu_produtos.add_command(label="Cadastrar Medicamento", command=self.cadastrar_produto)
-        self.menu_produtos.add_command(label="Remover Medicamento", command=self.remover_produto)
-        self.menu_produtos.add_command(label="Atualizar Medicamento", command=self.atualizar_produto)
-        self.menu_produtos.add_command(label="Listar Produtos", command=self.listar_produtos)
-
-        # Item para saída do aplicativo
-        self.menu.add_command(label="Sair", command=root.quit)
-
-        # Adicionar login ou cadastro ao iniciar
+        # Inicializa a tela de login
         self.login_janela()
 
     def login_janela(self):
         """Janela de login/cadastro"""
-        self.login_janela = tk.Toplevel(self.root)
-        self.login_janela.title("Login")
-        self.login_janela.geometry("400x250")
-
-        # Configuração de tamanho
-        self.login_janela.grid_columnconfigure(0, weight=1)
-        self.login_janela.grid_columnconfigure(1, weight=3)
+        self.clear_window()  # Limpa a janela antes de mostrar os componentes de login
+        
+        # Configuração de layout da tela de login
+        self.root.grid_columnconfigure(0, weight=1)
+        self.root.grid_columnconfigure(1, weight=3)
         
         # Nome de usuário
-        self.label_nome_usuario_login = tk.Label(self.login_janela, text="Nome de Usuário")
-        self.label_nome_usuario_login.grid(row=0, column=0, padx=5, pady=5, sticky="e")
-        self.entry_nome_usuario_login = tk.Entry(self.login_janela)
-        self.entry_nome_usuario_login.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+        self.label_usuario = tk.Label(self.root, text="Nome de Usuário", font=("Helvetica", 12, "bold"), bg="#D3D3D3", padx=10, pady=5)
+        self.label_usuario.grid(row=0, column=0, padx=5, pady=5, sticky="e")
+        self.entry_usuario = tk.Entry(self.root, font=("Helética", 12))
+        self.entry_usuario.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
         
         # Senha
-        self.label_senha_login = tk.Label(self.login_janela, text="Senha")
-        self.label_senha_login.grid(row=1, column=0, padx=5, pady=5, sticky="e")
-        self.entry_senha_login = tk.Entry(self.login_janela, show="*")
-        self.entry_senha_login.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
-        
+        self.label_senha = tk.Label(self.root, text="Senha", font=("Helvetica", 12, "bold"), bg="#D3D3D3", padx=10, pady=5)
+        self.label_senha.grid(row=1, column=0, padx=5, pady=5, sticky="e")
+        self.entry_senha = tk.Entry(self.root, font=("Helvética", 12), show="*")
+        self.entry_senha.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
+
         # Botão Login
-        self.botao_login = tk.Button(self.login_janela, text="Login", width=20, height=2, command=self.login)
+        self.botao_login = tk.Button(self.root, text="Login", width=20, height=2, command=self.login, bg="#4CAF50", fg="white", font=("Helvetica", 12, "bold"))
         self.botao_login.grid(row=2, column=0, columnspan=2, padx=10, pady=5)
 
         # Botão Cadastrar
-        self.botao_cadastrar = tk.Button(self.login_janela, text="Cadastrar", width=20, height=2, command=self.cadastrar)
+        self.botao_cadastrar = tk.Button(self.root, text="Cadastrar", width=20, height=2, command=self.cadastrar, bg="#4CAF50", fg="white", font=("Helvetica", 12, "bold"))
         self.botao_cadastrar.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
 
     def login(self):
-        nome_usuario = self.entry_nome_usuario_login.get()  # Corrigido para nome de usuário
-        senha = self.entry_senha_login.get()
+        nome_usuario = self.entry_usuario.get().strip()  # Remove espaços extras
+        senha = self.entry_senha.get().strip()  # Remove espaços extras
 
-        # Verificar se o usuário existe e a senha está correta
+        print(f"Tentando login com Nome de Usuário: '{nome_usuario}' e Senha: '{senha}'")  # Depuração
+
         if self.realizar_login(nome_usuario, senha):
-            self.login_janela.destroy()
+            self.show_funcionalidades()  # Exibe a tela de funcionalidades após o login
             messagebox.showinfo("Concluído", "Login realizado com sucesso!")
         else:
             messagebox.showerror("Erro", "Nome de usuário/senha inválidos. Tente novamente.")
+
+    def realizar_login(self, nome_usuario, senha):
+        """Verifica se o nome de usuário e senha correspondem aos dados cadastrados"""
+        if nome_usuario in usuarios:
+            print(f"Usuário encontrado no cadastro: {usuarios[nome_usuario]}")  # Depuração
+            if usuarios[nome_usuario]["senha"] == senha:
+                return True
+        print("Usuário ou senha inválidos.")  # Depuração
+        return False
 
     def cadastrar(self):
         self.cadastro_janela = tk.Toplevel(self.root)
@@ -83,77 +75,110 @@ class FarmaciaApp:
         self.cadastro_janela.grid_columnconfigure(1, weight=3)
 
         # Nome de usuário
-        self.label_nome = tk.Label(self.cadastro_janela, text="Nome de Usuário")
+        self.label_nome = tk.Label(self.cadastro_janela, text="Nome de Usuário", font=("Helvetica", 12, "bold"), bg="#D3D3D3", padx=10, pady=5)
         self.label_nome.grid(row=0, column=0, padx=5, pady=5, sticky="e")
-        self.entry_nome = tk.Entry(self.cadastro_janela)
+        self.entry_nome = tk.Entry(self.cadastro_janela, font=("Helvética", 12))
         self.entry_nome.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
 
         # Email
-        self.label_email = tk.Label(self.cadastro_janela, text="Email")
+        self.label_email = tk.Label(self.cadastro_janela, text="Email", font=("Helvetica", 12, "bold"), bg="#D3D3D3", padx=10, pady=5)
         self.label_email.grid(row=1, column=0, padx=5, pady=5, sticky="e")
-        self.entry_email = tk.Entry(self.cadastro_janela)
+        self.entry_email = tk.Entry(self.cadastro_janela, font=("Helvética", 12))
         self.entry_email.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
-        
+       
         # Senha
-        self.label_senha = tk.Label(self.cadastro_janela, text="Senha")
+        self.label_senha = tk.Label(self.cadastro_janela, text="Senha", font=("Helvetica", 12, "bold"), bg="#D3D3D3", padx=10, pady=5)
         self.label_senha.grid(row=2, column=0, padx=5, pady=5, sticky="e")
-        self.entry_senha = tk.Entry(self.cadastro_janela, show="*")
+        self.entry_senha = tk.Entry(self.cadastro_janela, font=("Helvética", 12), show="*")
         self.entry_senha.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
 
         # Botão Cadastrar
-        self.botao_cadastrar = tk.Button(self.cadastro_janela, text="Cadastrar", width=20, height=2, command=self.finalizar_cadastro)
+        self.botao_cadastrar = tk.Button(self.cadastro_janela, text="Cadastrar", width=20, height=2, command=self.finalizar_cadastro, bg="#008CBA", fg="white", font=("Helvetica", 12, "bold"))
         self.botao_cadastrar.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
 
     def finalizar_cadastro(self):
-        nome_usuario = self.entry_nome.get()  # Nome de usuário
-        email = self.entry_email.get()
-        senha = self.entry_senha.get()
+        nome_usuario = self.entry_nome.get().strip()  # Remove espaços extras
+        email = self.entry_email.get().strip()  # Remove espaços extras
+        senha = self.entry_senha.get().strip()  # Remove espaços extras
 
-        if self.cadastrar_usuario(nome_usuario, email, senha):
+        # Verificando se o nome de usuário já existe
+        if nome_usuario in usuarios:
+            messagebox.showerror("Erro", "Nome de usuário já cadastrado.")
+        else:
+            # Salvar o nome de usuário como chave e email e senha como valores no dicionário
+            usuarios[nome_usuario] = {"email": email, "senha": senha}
+            print(f"Usuário cadastrado: {usuarios[nome_usuario]}")  # Depuração
             messagebox.showinfo("Concluído", "Cadastro realizado com sucesso!")
             self.cadastro_janela.destroy()  # Fechar a tela de cadastro
-            self.login_janela.deiconify()  # Mostrar a tela de login novamente
-        else:
-            messagebox.showerror("Erro", "Nome de usuário ou email já cadastrado.")
+            self.login_janela()  # Mostrar a tela de login novamente
+
+    def show_funcionalidades(self):
+        """Exibe as funcionalidades após o login/cadastro"""
+        self.clear_window()  # Limpa a janela de login
+        
+        # Botões para as funcionalidades
+        self.botao_cadastrar_produto = tk.Button(self.root, text="Cadastrar Medicamento", width=20, height=4, command=self.cadastrar_produto, bg="#4CAF50", fg="white", font=("Helvetica", 12, "bold"))
+        self.botao_cadastrar_produto.grid(row=0, column=0, padx=20, pady=20)
+
+        self.botao_remover_produto = tk.Button(self.root, text="Remover Medicamento", width=20, height=4, command=self.remover_produto, bg="#4CAF50", fg="white", font=("Helvetica", 12, "bold"))
+        self.botao_remover_produto.grid(row=0, column=1, padx=20, pady=20)
+
+        self.botao_atualizar_produto = tk.Button(self.root, text="Atualizar Medicamento", width=20, height=4, command=self.atualizar_produto, bg="#4CAF50", fg="white", font=("Helvetica", 12, "bold"))
+        self.botao_atualizar_produto.grid(row=1, column=0, padx=20, pady=20)
+
+        self.botao_listar_produtos = tk.Button(self.root, text="Listar Produtos", width=20, height=4, command=self.listar_produtos, bg="#4CAF50", fg="white", font=("Helvetica", 12, "bold"))
+        self.botao_listar_produtos.grid(row=1, column=1, padx=20, pady=20)
 
     def cadastrar_produto(self):
-       
         """Tela para cadastrar um novo produto"""
         self.cadastro_produto_janela = tk.Toplevel(self.root)
         self.cadastro_produto_janela.title("Cadastro de Produto")
-        self.cadastro_produto_janela.geometry("400x250")
+        self.cadastro_produto_janela.geometry("400x300")
 
         # Configuração de tamanho
         self.cadastro_produto_janela.grid_columnconfigure(0, weight=1)
         self.cadastro_produto_janela.grid_columnconfigure(1, weight=3)
 
         # Nome do Produto
-        self.label_nome_produto = tk.Label(self.cadastro_produto_janela, text="Nome do Produto")
+        self.label_nome_produto = tk.Label(self.cadastro_produto_janela, text="Nome do Produto", font=("Helvetica", 12, "bold"), bg="#D3D3D3", padx=10, pady=5)
         self.label_nome_produto.grid(row=0, column=0, padx=5, pady=5, sticky="e")
         self.entry_nome_produto = tk.Entry(self.cadastro_produto_janela)
         self.entry_nome_produto.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
 
         # Preço do Produto
-        self.label_preco_produto = tk.Label(self.cadastro_produto_janela, text="Preço do Produto")
+        self.label_preco_produto = tk.Label(self.cadastro_produto_janela, text="Preço do Produto", font=("Helvetica", 12, "bold"), bg="#D3D3D3", padx=10, pady=5)
         self.label_preco_produto.grid(row=1, column=0, padx=5, pady=5, sticky="e")
         self.entry_preco_produto = tk.Entry(self.cadastro_produto_janela)
         self.entry_preco_produto.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
 
         # Quantidade do Produto
-        self.label_quantidade_produto = tk.Label(self.cadastro_produto_janela, text="Quantidade do Produto")
+        self.label_quantidade_produto = tk.Label(self.cadastro_produto_janela, text="Quantidade do Produto", font=("Helvetica", 12, "bold"), bg="#D3D3D3", padx=10, pady=5)
         self.label_quantidade_produto.grid(row=2, column=0, padx=5, pady=5, sticky="e")
         self.entry_quantidade_produto = tk.Entry(self.cadastro_produto_janela)
         self.entry_quantidade_produto.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
 
-            # Botão Cadastrar Produto
-        self.botao_cadastrar_produto = tk.Button(self.cadastro_produto_janela, text="Cadastrar Produto", width=20, height=2, command=self.finalizar_cadastro_produto)
-        self.botao_cadastrar_produto.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
+        # Tipo do Medicamento
+        self.label_tipo_produto = tk.Label(self.cadastro_produto_janela, text="Tipo do Medicamento", font=("Helvetica", 12, "bold"), bg="#D3D3D3", padx=10, pady=5)
+        self.label_tipo_produto.grid(row=3, column=0, padx=5, pady=5, sticky="e")
+        
+        # Opções para o tipo de medicamento
+        tipos_produto = ["Antibiótico", "Analgésico", "Anti-inflamatório", "Vitaminas"]
+        self.tipo_produto_var = tk.StringVar()
+        self.tipo_produto_var.set(tipos_produto[0])  # Define o tipo padrão
+        
+        self.menu_tipo_produto = tk.OptionMenu(self.cadastro_produto_janela, self.tipo_produto_var, *tipos_produto)
+        self.menu_tipo_produto.grid(row=3, column=1, padx=5, pady=5, sticky="ew")
+
+        # Botão Cadastrar Produto
+        self.botao_cadastrar_produto = tk.Button(self.cadastro_produto_janela, text="Cadastrar Produto", width=20, height=2, command=self.finalizar_cadastro_produto, font=("Helvetica", 12, "bold"), bg="#008CBA", padx=10, pady=5)
+        self.botao_cadastrar_produto.grid(row=4, column=0, columnspan=2, padx=10, pady=5)
 
     def finalizar_cadastro_produto(self):
         """Função para finalizar o cadastro do produto"""
         nome_produto = self.entry_nome_produto.get()
         preco_produto = self.entry_preco_produto.get()
         quantidade_produto = self.entry_quantidade_produto.get()
+        tipo_produto = self.tipo_produto_var.get()  # Pega o tipo selecionado
 
         # Validação se os campos foram preenchidos
         if not nome_produto or not preco_produto or not quantidade_produto:
@@ -171,7 +196,7 @@ class FarmaciaApp:
 
             # Gerando o código do produto
             codigo_produto = nome_produto[:3].upper() + str(int(preco_produto * 100))
-            produto = Produto(nome_produto, codigo_produto, preco_produto, quantidade_produto)
+            produto = Produto(nome_produto, codigo_produto, preco_produto, quantidade_produto, tipo_produto)
             estoque[produto.codigo] = produto  # Salva no estoque
             messagebox.showinfo("Concluído", "Produto cadastrado com sucesso!")
         
@@ -180,7 +205,7 @@ class FarmaciaApp:
 
         except ValueError:
             messagebox.showerror("Erro", "Por favor, insira valores válidos para preço e quantidade.")
-
+    
     def remover_produto(self):
         codigo = self.ask_input("Código do medicamento para remover: ")
         if codigo in estoque:
@@ -203,20 +228,40 @@ class FarmaciaApp:
 
     def listar_produtos(self):
         if estoque:
-            produto_list = "\n".join([str(produto) for produto in estoque.values()])
-            messagebox.showinfo("Lista de Produtos", produto_list)
+            # Cria uma nova janela para exibir a lista de produtos
+            self.lista_produtos_janela = tk.Toplevel(self.root)
+            self.lista_produtos_janela.title("Lista de Produtos")
+            self.lista_produtos_janela.geometry("600x400")
+        
+            # Configuração de layout
+            self.lista_produtos_janela.grid_columnconfigure(0, weight=1)
+            self.lista_produtos_janela.grid_columnconfigure(1, weight=2)
+            self.lista_produtos_janela.grid_columnconfigure(2, weight=1)
+            self.lista_produtos_janela.grid_columnconfigure(3, weight=1)
+            self.lista_produtos_janela.grid_columnconfigure(4, weight=1)
+
+            # Cabeçalhos
+            cabecalho = tk.Label(self.lista_produtos_janela, text="Código | Nome | Preço | Quantidade | Tipo", font=("Helvetica", 12, "bold"), bg="#D3D3D3", padx=10, pady=10)
+            cabecalho.grid(row=0, column=0, columnspan=5, padx=10, pady=5, sticky="ew")
+
+            # Linha separadora
+            linha_separadora = tk.Label(self.lista_produtos_janela, text="-"*60, font=("Helvetica", 8), bg="#D3D3D3")
+            linha_separadora.grid(row=1, column=0, columnspan=5, padx=10, pady=5, sticky="ew")
+        
+            # Exibe os produtos cadastrados em linhas
+            for idx, produto in enumerate(estoque.values(), start=2):
+                tk.Label(self.lista_produtos_janela, text=produto.codigo, font=("Helvetica", 12), padx=10, pady=5).grid(row=idx, column=0, padx=5, pady=5)
+                tk.Label(self.lista_produtos_janela, text=produto.nome, font=("Helvetica", 12), padx=10, pady=5).grid(row=idx, column=1, padx=5, pady=5)
+                tk.Label(self.lista_produtos_janela, text=f"R${produto.preco:.2f}", font=("Helvetica", 12), padx=10, pady=5).grid(row=idx, column=2, padx=5, pady=5)
+                tk.Label(self.lista_produtos_janela, text=produto.quantidade, font=("Helvetica", 12), padx=10, pady=5).grid(row=idx, column=3, padx=5, pady=5)
+                tk.Label(self.lista_produtos_janela, text=produto.tipo, font=("Helvetica", 12), padx=10, pady=5).grid(row=idx, column=4, padx=5, pady=5)
+
+            # Botão Fechar
+            botao_fechar = tk.Button(   self.lista_produtos_janela, text="Fechar", width=20, height=2, command=self.lista_produtos_janela.destroy, bg="#f44336", fg="white", font=     ("Helvetica", 12, "bold"))
+            botao_fechar.grid(row=idx+1, column=0, columnspan=5, padx=10, pady=20)
+        
         else:
             messagebox.showinfo("Lista de Produtos", "Não há produtos cadastrados.")
-
-    def ask_input(self, pergunta, is_number=False):
-        resposta = simpledialog.askstring("Entrada", pergunta)
-        if is_number:
-            try:
-                return float(resposta) if resposta else None
-            except ValueError:
-                messagebox.showerror("Erro", "Por favor insira um número válido!")
-                return None
-        return resposta
 
     def realizar_login(self, nome_usuario, senha):
         """Verifica as credenciais de login no dicionário de usuários"""
@@ -231,6 +276,11 @@ class FarmaciaApp:
             usuarios[nome_usuario] = {'email': email, 'senha': senha}
             return True
         return False
+
+    def clear_window(self):
+        """Limpa todos os widgets da janela"""
+        for widget in self.root.winfo_children():
+            widget.destroy()
 
 def main():
     root = tk.Tk()
