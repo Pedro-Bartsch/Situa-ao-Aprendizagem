@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox, simpledialog
+from tkinter import messagebox, simpledialog, Toplevel
 from modelos import Produto
 
 # Armazenar produtos e usuários em memória
@@ -207,24 +207,87 @@ class FarmaciaApp:
             messagebox.showerror("Erro", "Por favor, insira valores válidos para preço e quantidade.")
     
     def remover_produto(self):
-        codigo = self.ask_input("Código do medicamento para remover: ")
-        if codigo in estoque:
-            del estoque[codigo]
-            messagebox.showinfo("Concluído", f"Medicamento {codigo} removido com sucesso!")
+        # Janela para remover produto
+        self.remover_window = Toplevel(self.root)
+        self.remover_window.title("Remover Produto")
+        self.remover_window.geometry("300x200")
+
+        # Label e entrada para o código do medicamento
+        self.codigo_label = tk.Label(self.remover_window, text="Código do medicamento:", bg="#4CAF50", fg="white", font=("Helvetica", 12, "bold"))
+        self.codigo_label.pack(pady=10)
+
+        self.codigo_entry = tk.Entry(self.remover_window)
+        self.codigo_entry.pack(pady=5)
+
+            # Função para remover produto
+        def remover():
+            codigo = self.codigo_entry.get()
+            if codigo in estoque:
+                del estoque[codigo]
+                messagebox.showinfo("Concluído", f"Medicamento {codigo} removido com sucesso!")
+                self.remover_window.destroy()
+            else:
+                messagebox.showerror("Erro", f"Medicamento {codigo} não encontrado.")
+                self.codigo_entry.delete(0, tk.END)
+
+        # Botão para executar a remoção
+        self.remover_button = tk.Button(self.remover_window, text="Remover", command=remover)
+        self.remover_button.pack(pady=15)
+
+        # Botão de fechar
+        self.fechar_button = tk.Button(self.remover_window, text="Fechar", command=self.remover_window.destroy)
+        self.fechar_button.pack()
+
 
     def atualizar_produto(self):
-        codigo = self.ask_input("Código do medicamento para atualizar:")
-        if codigo in estoque:
-            novo_nome = self.ask_input("Novo nome do medicamento")
-            novo_preco = self.ask_input("Novo preço do medicamento: ", is_number=True)
-            nova_quantidade = self.ask_input("Nova quantidade do medicamento: ", is_number=True)
+        # Janela para atualizar produto
+        self.atualizar_window = Toplevel(self.root)
+        self.atualizar_window.title("Atualizar Produto")
+        self.atualizar_window.geometry("300x300")
 
-            produto = estoque[codigo]
-            produto.nome = novo_nome if novo_nome else produto.nome
-            produto.preco = novo_preco if novo_preco else produto.preco
-            produto.quantidade = nova_quantidade if nova_quantidade else produto.quantidade
+        # Label e entrada para o código do medicamento
+        self.codigo_label = tk.Label(self.atualizar_window, text="Código do medicamento:",bg="#4CAF50", fg="white", font=("Helvetica", 12, "bold"))
+        self.codigo_label.pack(pady=10)
 
-            messagebox.showinfo("Concluído", f"Medicamento {codigo} atualizado com sucesso!")
+        self.codigo_entry = tk.Entry(self.atualizar_window)
+        self.codigo_entry.pack(pady=5)
+
+        # Função para atualizar produto
+        def atualizar():
+            codigo = self.codigo_entry.get()
+            if codigo in estoque:
+                novo_nome = simpledialog.askstring("Novo nome", "Digite o novo nome do medicamento:", parent=self.atualizar_window)
+                novo_preco = simpledialog.askstring("Novo preço", "Digite o novo preço do medicamento:", parent=self.atualizar_window)
+                novo_quantidade = simpledialog.askstring("Nova quantidade", "Digite a nova quantidade do medicamento:", parent=self.atualizar_window)
+            
+                # Validações de preço e quantidade
+                try:
+                    novo_preco = float(novo_preco)
+                    novo_quantidade = int(novo_quantidade)
+                
+                    produto = estoque[codigo]
+                
+                    if novo_nome:
+                        produto.nome = novo_nome
+                    if novo_preco:
+                        produto.preco = novo_preco
+                    if novo_quantidade:
+                       produto.quantidade = novo_quantidade
+
+                    messagebox.showinfo("Concluído", f"Medicamento {codigo} atualizado com sucesso!")
+                    self.atualizar_window.destroy()
+                except ValueError:
+                    messagebox.showerror("Erro", "Preço ou quantidade inválidos.")
+            else:
+                messagebox.showerror("Erro", f"Medicamento {codigo} não encontrado.")
+
+        # Botão para executar a atualização
+        self.atualizar_button = tk.Button(self.atualizar_window, text="Atualizar", command=atualizar)
+        self.atualizar_button.pack(pady=15)
+
+        # Botão de fechar
+        self.fechar_button = tk.Button(self.atualizar_window, text="Fechar", command=self.atualizar_window.destroy)
+        self.fechar_button.pack()
 
     def listar_produtos(self):
         if estoque:
@@ -263,6 +326,21 @@ class FarmaciaApp:
         else:
             messagebox.showinfo("Lista de Produtos", "Não há produtos cadastrados.")
 
+    def ask_input(self, prompt, is_number=False):
+        """Pede ao usuário uma entrada simples com uma caixa de diálogo."""
+        resposta = simpledialog.askstring("Entrada", prompt, parent=self.root)
+    
+        # Se for número, verifica se a resposta é válida
+        if is_number:
+            try:
+               resposta = float(resposta)
+               return resposta
+            except ValueError:
+                messagebox.showerror("Erro", "Por favor, insira um número válido.")
+                return None
+
+        return resposta
+
     def realizar_login(self, nome_usuario, senha):
         """Verifica as credenciais de login no dicionário de usuários"""
         usuario = usuarios.get(nome_usuario)
@@ -289,3 +367,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
